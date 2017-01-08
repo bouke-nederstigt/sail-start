@@ -6,6 +6,7 @@ import play.api.routing.Router.Routes
 import play.api.routing.SimpleRouter
 import play.api.routing.sird._
 
+
 /**
  * Created by bouke on 07/01/17.
  */
@@ -27,7 +28,6 @@ class LocationRouter @Inject()(controller: LocationController) extends SimpleRou
 
     case GET(p"/$id") =>
       controller.show(id)
-  }
   }
 
 }

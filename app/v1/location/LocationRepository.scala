@@ -29,6 +29,7 @@ trait LocationRepository {
   def get(id: LocationId): Future[Location]
 }
 
+@Singleton
 class InMemoryLocationRepository @Inject() extends LocationRepository {
 
   private val logger = org.slf4j.LoggerFactory.getLogger(this.getClass)
