@@ -3,9 +3,8 @@ package v1.location
 import javax.inject.Inject
 
 import play.api.data.Form
-import play.api.mvc.{AnyContent, Controller}
-import play.libs.Json
-import play.mvc._
+import play.api.libs.json.Json
+import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,15 +27,16 @@ class LocationController @Inject()(
 
     Form(
       mapping(
-        "latitude" -> nonEmptyText,
-        "longitude" -> nonEmptyText()
+        "id" -> nonEmptyText(),
+        "latitude" -> of[Double],
+        "longitude" -> of[Double]
       )(LocationFormInput.apply)(LocationFormInput.unapply)
     )
   }
 
   def index: Action[AnyContent] = {
-    action.async{ implicit request =>
-    handler.find.map { locations => Ok(Json.toJson(locations))}
+    action.async { implicit request =>
+      handler.find.map { locations => Ok(Json.toJson(locations)) }
     }
   }
 

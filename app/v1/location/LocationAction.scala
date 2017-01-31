@@ -1,22 +1,29 @@
-package v1.location
+package v1.Location
 
 import javax.inject.Inject
 
-import org.slf4j.LoggerFactory
 import play.api.http.HttpVerbs
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc._
-import play.i18n.Messages
 
-
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * Created by bouke on 08/01/17.
+ * A wrapped request for Location resources.
+ *
+ * This is commonly used to hold request-specific information like
+ * security credentials, and useful shortcut methods.
  */
+class LocationRequest[A](request: Request[A], val messages: Messages)
+  extends WrappedRequest(request)
 
-class LocationRequest[A](request: LocationRequest, val messages: Messages) extends WrappedRequest(request)
-
+/**
+ * The default action for the Location resource.
+ *
+ * This is the place to put logging, metrics, to augment
+ * the request with contextual data, and manipulate the
+ * result.
+ */
 class LocationAction @Inject()(messagesApi: MessagesApi)(
   implicit ec: ExecutionContext)
   extends ActionBuilder[LocationRequest]
@@ -26,13 +33,14 @@ class LocationAction @Inject()(messagesApi: MessagesApi)(
 
   private val logger = org.slf4j.LoggerFactory.getLogger(this.getClass)
 
-  override def invokeBlock[A](request: Request[A], block: LocationRequest[A]): Future[Result] = {
-    if (logger.isTraceEnabled()){
-      logger.trace(s"invokeblock: request: request = $request")
+  override def invokeBlock[A](request: Request[A],
+                              block: LocationRequestBlock[A]): Future[Result] = {
+    if (logger.isTraceEnabled()) {
+      logger.trace(s"invokeBlock: request = $request")
     }
 
     val messages = messagesApi.preferred(request)
-    val future =  block(new LocationRequest(request, messages))
+    val future = block(new LocationRequest(request, messages))
 
     future.map { result =>
       request.method match {
@@ -42,6 +50,5 @@ class LocationAction @Inject()(messagesApi: MessagesApi)(
           result
       }
     }
-
   }
 }
