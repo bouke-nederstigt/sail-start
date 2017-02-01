@@ -1,4 +1,4 @@
-package v1.Location
+package v1.location
 
 import javax.inject.Inject
 

@@ -26,7 +26,7 @@ trait LocationRepository {
 
   def list(): Future[Iterable[Location]]
 
-  def get(id: LocationId): Future[Location]
+  def get(id: LocationId): Future[Option[Location]]
 }
 
 @Singleton
@@ -46,7 +46,7 @@ class InMemoryLocationRepository @Inject() extends LocationRepository {
     }
   }
 
-  override def get(id: LocationId): Future[Location] = {
+  override def get(id: LocationId): Future[Option[Location]] = {
     Future.successful {
       logger.trace(s"get: id = $id")
       locationList.find(location => location.id == id)

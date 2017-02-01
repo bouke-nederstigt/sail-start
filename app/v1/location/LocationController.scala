@@ -5,6 +5,9 @@ import javax.inject.Inject
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc._
+import play.api.data.format.Formats._
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +40,14 @@ class LocationController @Inject()(
   def index: Action[AnyContent] = {
     action.async { implicit request =>
       handler.find.map { locations => Ok(Json.toJson(locations)) }
+    }
+  }
+
+  def show(id: String): Action[AnyContent] = {
+    action.async { implicit request =>
+      handler.lookup(id).map { location =>
+        Ok(Json.toJson(location))
+      }
     }
   }
 
