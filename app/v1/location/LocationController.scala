@@ -6,8 +6,8 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.data.format.Formats._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -22,8 +22,9 @@ case class LocationFormInput(id: String, latitude: Double, longitude: Double)
 
 class LocationController @Inject()(
                                     action: LocationAction,
-                                    handler: LocationResourceHandler)(implicit ec: ExecutionContext)
-  extends Controller {
+                                    handler: LocationResourceHandler,
+                                    val messagesApi: MessagesApi)(implicit ec: ExecutionContext)
+  extends Controller with I18nSupport {
 
   private val form: Form[LocationFormInput] = {
     import play.api.data.Forms._

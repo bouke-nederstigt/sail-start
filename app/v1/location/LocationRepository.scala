@@ -35,8 +35,8 @@ class InMemoryLocationRepository @Inject() extends LocationRepository {
   private val logger = org.slf4j.LoggerFactory.getLogger(this.getClass)
 
   private val locationList = List(
-    Location(LocationId("Location1"), 52.370216, 4.895168),
-    Location(LocationId("Location2"), 52.370216, 4.895168)
+    Location(LocationId("1"), 52.370216, 4.895168),
+    Location(LocationId("2"), 52.370216, 4.895168)
   )
 
   override def list(): Future[Iterable[Location]] = {
