@@ -29,7 +29,7 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
   def create(locationInput: LocationFormInput): Future[LocationResource] = {
     val data = Location(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
 
-    locationRepository.create(data).map({ id => createLocationResource(data) })
+    locationRepository. create(data).map({ id => createLocationResource(data) })
   }
 
   def lookup(id: String): Future[Option[LocationResource]] = {

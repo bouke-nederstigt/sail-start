@@ -1,5 +1,7 @@
 package v1.location
 
+
+import scala.collection.mutable
 import scala.concurrent.Future
 
 import javax.inject.{Inject, Singleton}
@@ -34,28 +36,25 @@ class InMemoryLocationRepository @Inject() extends LocationRepository {
 
   private val logger = org.slf4j.LoggerFactory.getLogger(this.getClass)
 
-  private val locationList = List(
-    Location(LocationId("1"), 52.370216, 4.895168),
-    Location(LocationId("2"), 52.370216, 4.895168)
-  )
+  private val locations = mutable.HashMap.empty[LocationId, Location]
 
   override def list(): Future[Iterable[Location]] = {
     Future.successful {
       logger.trace(s"list: ")
-      locationList
+      locations.valuesIterator.toList
     }
   }
 
   override def get(id: LocationId): Future[Option[Location]] = {
     Future.successful {
       logger.trace(s"get: id = $id")
-      locationList.find(location => location.id == id)
+      locations.get(id)
     }
   }
 
   override def create(data: Location): Future[LocationId] = {
     Future.successful {
-      logger.trace(s"create: data = $data")
+      locations += (data.id -> data)
       data.id
     }
   }
