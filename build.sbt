@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
-//libraryDependencies ++= Seq( jdbc , anorm , cache , ws )
+libraryDependencies ++= Seq(ws )
 
 libraryDependencies += "com.netaporter" %% "scala-uri" % "0.4.14"
 
@@ -15,6 +15,7 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1
 libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.2.2" % Test
 
 libraryDependencies += "io.gatling" % "gatling-test-framework" % "2.2.2" % Test
+
 
 // The Play project itself
 lazy val root = (project in file("."))
