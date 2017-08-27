@@ -4,13 +4,15 @@ import javax.inject.{Inject, Provider}
 
 import play.api.libs.json.{Json, JsValue, Writes}
 
+//import v1.wind.Wind
+
 import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * Created by bouke on 07/01/17.
  */
 
-case class LocationResource(id: String, link: String, latitude: Double, longitude: Double)
+case class LocationResource(id: String, link: String, latitude: Double, longitude: Double, locationType: String)
 
 /**
  * Mapping to convert location resource to json
@@ -18,7 +20,7 @@ case class LocationResource(id: String, link: String, latitude: Double, longitud
 object LocationResource {
   implicit val implicitWrites = new Writes[LocationResource] {
     override def writes(location: LocationResource): JsValue = {
-      Json.obj("id" -> location.id, "latitude" -> location.latitude, "longitude" -> location.longitude)
+      Json.obj("id" -> location.id, "latitude" -> location.latitude, "longitude" -> location.longitude, "locationType" -> location.locationType)
     }
   }
 }
@@ -27,9 +29,12 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
                                        (implicit ec: ExecutionContext) {
 
   def create(locationInput: LocationFormInput): Future[LocationResource] = {
-    val data = Location(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+    val data: Location = locationInput.locationType match {
+      case "startschip" => StartSchip(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+      case "bovenboei" => BovenBoei(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+    }
 
-    locationRepository. create(data).map({ id => createLocationResource(data) })
+    locationRepository.create(data).map({ id => createLocationResource(data) })
   }
 
   def lookup(id: String): Future[Option[LocationResource]] = {
@@ -48,7 +53,7 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
   }
 
   private def createLocationResource(l: Location): LocationResource = {
-    LocationResource(l.id.toString, routerProvider.get.link(l.id), l.latitude, l.longitude)
+    LocationResource(l.id.toString, routerProvider.get.link(l.id), l.latitude, l.longitude, l.locationType)
   }
 
 }

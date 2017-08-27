@@ -6,7 +6,7 @@ import scala.collection.mutable
 final case class Wind(location: Location, speed: Float, degree: Int)
 
 trait WindRepository {
-  def save(wind: Wind): Boolean
+  def save(wind: Wind): LocationId
 
   def findAll(): Iterable[Wind]
 

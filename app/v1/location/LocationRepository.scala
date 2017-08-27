@@ -1,6 +1,8 @@
 package v1.location
 
 
+import v1.wind.Wind
+
 import scala.collection.mutable
 import scala.concurrent.Future
 
@@ -10,7 +12,27 @@ import javax.inject.{Inject, Singleton}
  * Created by bouke on 07/01/17.
  */
 
-final case class Location(id: LocationId, latitude: Double, longitude: Double)
+trait Location {
+  def id: LocationId
+
+  def latitude: Double
+
+  def longitude: Double
+
+  def locationType: String
+}
+
+case class StartSchip(id: LocationId, latitude: Double, longitude: Double) extends Location {
+  val locationType = "startschip"
+}
+
+case class BovenBoei(id: LocationId, latitude: Double, longitude: Double) extends Location {
+  val locationType = "bovenboei"
+}
+
+case class OnderBoei(id: LocationId, latitude: Double, longitude: Double) extends Location {
+  val locationType = "onderboei"
+}
 
 class LocationId private(val underlying: Int) extends AnyVal {
   override def toString: String = underlying.toString

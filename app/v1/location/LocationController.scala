@@ -2,12 +2,14 @@ package v1.location
 
 import javax.inject.Inject
 
-import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.data.format.Formats._
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
+import v1.wind.Wind
+import play.api.data._
+import play.api.data.Forms._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,7 +20,7 @@ import scala.concurrent.ExecutionContext
  * Created by bouke on 07/01/17.
  */
 
-case class LocationFormInput(id: String, latitude: Double, longitude: Double)
+case class LocationFormInput(id: String, latitude: Double, longitude: Double, locationType: String)
 
 class LocationController @Inject()(
                                     action: LocationAction,
@@ -26,15 +28,24 @@ class LocationController @Inject()(
                                     val messagesApi: MessagesApi)(implicit ec: ExecutionContext)
   extends Controller with I18nSupport {
 
-  private val form: Form[LocationFormInput] = {
-    import play.api.data.Forms._
+  def validateLocationForm(id: String, latitude: Double, longitude: Double, locationType: String) = {
+    locationType match {
+      case "bovenboei" => true
+      case "startschip" => true
+      case _ => false
+    }
+  }
 
+  private val form: Form[LocationFormInput] = {
     Form(
       mapping(
         "id" -> nonEmptyText(),
         "latitude" -> of[Double],
-        "longitude" -> of[Double]
-      )(LocationFormInput.apply)(LocationFormInput.unapply)
+        "longitude" -> of[Double],
+        "locationType" -> of[String]
+      )(LocationFormInput.apply)(LocationFormInput.unapply) verifying("Form validation failed", fields => fields match {
+        case locationFormInput => validateLocationForm(locationFormInput.id, locationFormInput.latitude, locationFormInput.longitude, locationFormInput.locationType)
+      })
     )
   }
 
