@@ -3,6 +3,7 @@ package v1.location
 import javax.inject.{Inject, Provider}
 
 import play.api.libs.json.{Json, JsValue, Writes}
+import v1.wind.{WindService, WindRepository}
 
 //import v1.wind.Wind
 
@@ -25,16 +26,26 @@ object LocationResource {
   }
 }
 
-class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter], locationRepository: LocationRepository)
+class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter], locationRepository: LocationRepository, windRepository: WindRepository, windService: WindService)
                                        (implicit ec: ExecutionContext) {
 
   def create(locationInput: LocationFormInput): Future[LocationResource] = {
     val data: Location = locationInput.locationType match {
       case "startschip" => StartSchip(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
-      case "bovenboei" => BovenBoei(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+      case "bovenboei" => {
+        windService.getWindForLocation(data).map({ wind => windRepository.save(wind) })
+        BovenBoei(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+      }
     }
 
     locationRepository.create(data).map({ id => createLocationResource(data) })
+  }
+
+  def getOnderboei(onderboeiInput: OnderBoeiFormInput): Future[Option[LocationResource]] = {
+    val bovenboei = locationRepository.get(LocationId(onderboeiInput.bovenboeiId))
+    val startschip = locationRepository.get(LocationId(onderboeiInput.startschipId))
+
+    val bovenboeiWind = windRepository.findByLocation(LocationId(onderboeiInput.bovenboeiId))
   }
 
   def lookup(id: String): Future[Option[LocationResource]] = {

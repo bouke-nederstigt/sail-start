@@ -22,6 +22,8 @@ import scala.concurrent.ExecutionContext
 
 case class LocationFormInput(id: String, latitude: Double, longitude: Double, locationType: String)
 
+case class OnderBoeiFormInput(startschipId: String, bovenboeiId: String)
+
 class LocationController @Inject()(
                                     action: LocationAction,
                                     handler: LocationResourceHandler,
@@ -42,10 +44,19 @@ class LocationController @Inject()(
         "id" -> nonEmptyText(),
         "latitude" -> of[Double],
         "longitude" -> of[Double],
-        "locationType" -> of[String]
+        "locationType" -> nonEmptyText()
       )(LocationFormInput.apply)(LocationFormInput.unapply) verifying("Form validation failed", fields => fields match {
         case locationFormInput => validateLocationForm(locationFormInput.id, locationFormInput.latitude, locationFormInput.longitude, locationFormInput.locationType)
       })
+    )
+  }
+
+  private val onderboeiForm: Form[OnderBoeiFormInput] = {
+    Form(
+      mapping(
+        "startschipId" -> nonEmptyText(),
+        "bovenboeiId" -> nonEmptyText()
+      )(OnderBoeiFormInput.apply)(OnderBoeiFormInput.unapply)
     )
   }
 
@@ -69,6 +80,12 @@ class LocationController @Inject()(
     }
   }
 
+  def startschip: Action[AnyContent] = {
+    action.async { implicit request =>
+      processOnderBoeiLocation()
+    }
+  }
+
   protected def processJsonLocation[A]()(implicit request: LocationRequest[A]): Future[Result] = {
     def failure(badForm: Form[LocationFormInput]) = {
       Future.successful(BadRequest(badForm.errorsAsJson))
@@ -78,6 +95,18 @@ class LocationController @Inject()(
       handler.create(input).map { location =>
         Created(Json.toJson(location)).withHeaders(LOCATION -> location.link)
       }
+    }
+
+    form.bindFromRequest().fold(failure, success)
+  }
+
+  protected def processOnderBoeiLocation[A]()(implicit request: LocationRequest[A]): Future[Result] = {
+    def failure(badForm: Form[OnderBoeiFormInput]) = {
+      Future.successful(BadRequest(badForm.errorsAsJson))
+    }
+
+    def success(input: OnderBoeiFormInput) = {
+      handler.getOnderboei(input).map { location => Created(Json.toJson(location)).withHeaders(LOCATION -> location.link) }
     }
 
     form.bindFromRequest().fold(failure, success)

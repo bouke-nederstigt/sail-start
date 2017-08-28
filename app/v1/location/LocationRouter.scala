@@ -27,6 +27,8 @@ class LocationRouter @Inject()(controller: LocationController) extends SimpleRou
 
     case GET(p"/$id") =>
       controller.show(id)
-  }
 
+    case POST(p"/onderboei") =>
+      controller.startschip
+  }
 }
