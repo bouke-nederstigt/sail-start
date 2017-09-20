@@ -26,7 +26,7 @@ object LocationResource {
   }
 }
 
-class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter], locationRepository: LocationRepository, windRepository: WindRepository, windService: WindService)
+class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter], locationRepository: LocationRepository, windRepository: WindRepository, windService: WindService, locationCalculator: LocationCalculator)
                                        (implicit ec: ExecutionContext) {
 
   def create(locationInput: LocationFormInput): Future[LocationResource] = {
@@ -42,10 +42,18 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
   }
 
   def getOnderboei(onderboeiInput: OnderBoeiFormInput): Future[Option[LocationResource]] = {
-    val bovenboei = locationRepository.get(LocationId(onderboeiInput.bovenboeiId))
-    val startschip = locationRepository.get(LocationId(onderboeiInput.startschipId))
+    for {
+      startSchip <- locationRepository.get(LocationId(onderboeiInput.startschipId))
 
-    val bovenboeiWind = windRepository.findByLocation(LocationId(onderboeiInput.bovenboeiId))
+      bovenboeiWind = windRepository.findByLocation(LocationId(onderboeiInput.bovenboeiId))
+
+      onderBoei <- if (bovenboeiWind.isDefined && startSchip.isDefined) {
+        //@TODO: Make repository returns case class instead of generic Location object
+        Future(Some(locationCalculator.calculateOnderBoei(startSchip.get, 200, locationCalculator.getRightAngleWind(bovenboeiWind.get).degree)))
+      } else Future(None)
+
+    } yield onderBoei.map(location => createLocationResource(location))
+
   }
 
   def lookup(id: String): Future[Option[LocationResource]] = {

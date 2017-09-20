@@ -11,10 +11,10 @@ class LocationCalculator {
    * Returns the destination point from ‘this’ point having travelled the given distance on the
    * given initial bearing (bearing normally varies around path followed).
    */
-  def calculateOnderBoei(bovenBoei: BovenBoei, startSchip: StartSchip, startLineLength: Int, startLineBearing: Int): OnderBoei = {
+  def calculateOnderBoei(startSchip: Location, startLineLength: Int, startLineBearing: Int): OnderBoei = {
     val φ1 = math.toRadians(startSchip.latitude)
     val λ1 = math.toRadians(startSchip.longitude)
-    val θ = math.toRadians(startLineBearing)
+    val θ = math.toRadians(startLineBearing.toDouble)
 
     val sinφ1 = math.sin(φ1)
     val cosφ1 = math.cos(φ1)
@@ -36,10 +36,10 @@ class LocationCalculator {
 
     val λ2 = λ1 + math.atan2(y, x)
 
-    OnderBoei(LocationId("Should be generated somehow"), math.toDegrees(φ2), (math.toDegrees(λ2) + 540) % 360 - 180) //normalise to -180 .. 180
+    OnderBoei(startSchip.id, math.toDegrees(φ2), (math.toDegrees(λ2) + 540) % 360 - 180) //normalise to -180 .. 180
   }
 
-  protected def getRightAngleWind(wind: Wind): Wind = {
+  def getRightAngleWind(wind: Wind): Wind = {
     val newDegree: Int = wind.degree + 90
     if (newDegree > 360) {
       Wind(wind.location, wind.speed, newDegree - 360)
@@ -48,11 +48,11 @@ class LocationCalculator {
     }
   }
 
-  protected def getAngularDistance(distance: Int): Int = {
+  protected def getAngularDistance(distance: Int): Double = {
     //distance should be in same unit as radius (metres)
     val radius = 6371e3 // earth radius in metres
 
-    math.ceil(distance / radius).toInt // angular distance in radians
+    math.ceil(distance / radius) // angular distance in radians
   }
 
   //midpoint between startschip & onderboei

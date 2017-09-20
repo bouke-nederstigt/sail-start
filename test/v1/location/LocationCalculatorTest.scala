@@ -8,19 +8,16 @@ import v1.wind.Wind
  */
 class LocationCalculatorTest extends FlatSpec {
 
-  "getRightAngleWind" should "add 90 to wind degree" in {
+  "calculateOnderBoei" should "return OnderBoei " in {
     val calculator = new LocationCalculator
-    val wind = Wind(BovenBoei(LocationId("123"), 52.123, 49.000), 4, 90)
-    val newWind = calculator.getRightAngleWind(wind)
+    val bovenBoei = BovenBoei(LocationId("123"), 52.3558184, 4.8868948) // unused for now
+    val startSchip = StartSchip(LocationId("123"), 52.3558184, 4.8868948)
+    val wind = Wind(bovenBoei, 4, 0)
+    val onderBoei = calculator.calculateOnderBoei(bovenBoei, startSchip,  200, 90)
 
-    assert(newWind.degree == 180)
+    assert(onderBoei.id == startSchip.id)
+    assert(onderBoei.latitude == 52.3558)
+    assert(onderBoei.longitude == 4.8898)
   }
 
-  "getRightAngleWind" should "not be more than 360" in {
-    val calculator = new LocationCalculator
-    val wind = Wind(BovenBoei(LocationId("123"), 52.123, 49.00), 4, 271)
-    val newWind = calculator.getRightAngleWind(wind)
-
-    assert(newWind.degree == 1)
-  }
 }
