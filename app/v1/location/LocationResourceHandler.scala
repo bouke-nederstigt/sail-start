@@ -19,10 +19,9 @@ case class LocationResource(id: String, link: String, latitude: Double, longitud
  * Mapping to convert location resource to json
  */
 object LocationResource {
-  implicit val implicitWrites = new Writes[LocationResource] {
-    override def writes(location: LocationResource): JsValue = {
+  implicit val jsonWrites = new Writes[LocationResource] {
+    def writes(location: LocationResource) =
       Json.obj("id" -> location.id, "latitude" -> location.latitude, "longitude" -> location.longitude, "locationType" -> location.locationType)
-    }
   }
 }
 
@@ -33,8 +32,9 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
     val data: Location = locationInput.locationType match {
       case "startschip" => StartSchip(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
       case "bovenboei" => {
-        windService.getWindForLocation(data).map({ wind => windRepository.save(wind) })
-        BovenBoei(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+        val bovenboei = BovenBoei(LocationId(locationInput.id), locationInput.latitude, locationInput.longitude)
+        windService.getWindForLocation(bovenboei).map({ wind => windRepository.save(wind) })
+        bovenboei
       }
     }
 
@@ -48,7 +48,7 @@ class LocationResourceHandler @Inject()(routerProvider: Provider[LocationRouter]
       bovenboeiWind = windRepository.findByLocation(LocationId(onderboeiInput.bovenboeiId))
 
       onderBoei <- if (bovenboeiWind.isDefined && startSchip.isDefined) {
-        //@TODO: Make repository returns case class instead of generic Location object
+        //@TODO: Make repository return case class instead of generic Location object
         Future(Some(locationCalculator.calculateOnderBoei(startSchip.get, 200, locationCalculator.getRightAngleWind(bovenboeiWind.get).degree)))
       } else Future(None)
 

@@ -20,7 +20,7 @@ class LocationCalculator {
     val cosφ1 = math.cos(φ1)
 
     val cosAd = math.cos(getAngularDistance(startLineLength))
-    val sinAd = math.cos(getAngularDistance(startLineLength))
+    val sinAd = math.sin(getAngularDistance(startLineLength))
 
     val cosλ1 = math.cos(λ1)
     val sinλ1 = math.sin(λ1)
@@ -36,7 +36,10 @@ class LocationCalculator {
 
     val λ2 = λ1 + math.atan2(y, x)
 
-    OnderBoei(startSchip.id, math.toDegrees(φ2), (math.toDegrees(λ2) + 540) % 360 - 180) //normalise to -180 .. 180
+    val lat2 = math.toDegrees(φ2)
+    val long2 = (math.toDegrees(λ2) + 540) % 360 - 180 //normalise to -180 .. 180
+
+    OnderBoei(startSchip.id, lat2, long2)
   }
 
   def getRightAngleWind(wind: Wind): Wind = {
@@ -52,7 +55,7 @@ class LocationCalculator {
     //distance should be in same unit as radius (metres)
     val radius = 6371e3 // earth radius in metres
 
-    math.ceil(distance / radius) // angular distance in radians
+    distance / radius // angular distance in radians
   }
 
   //midpoint between startschip & onderboei

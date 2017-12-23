@@ -13,11 +13,11 @@ class LocationCalculatorTest extends FlatSpec {
     val bovenBoei = BovenBoei(LocationId("123"), 52.3558184, 4.8868948) // unused for now
     val startSchip = StartSchip(LocationId("123"), 52.3558184, 4.8868948)
     val wind = Wind(bovenBoei, 4, 0)
-    val onderBoei = calculator.calculateOnderBoei(bovenBoei, startSchip,  200, 90)
+    val onderBoei = calculator.calculateOnderBoei(startSchip,  200, 90)
 
     assert(onderBoei.id == startSchip.id)
-    assert(onderBoei.latitude == 52.3558)
-    assert(onderBoei.longitude == 4.8898)
+    assert(onderBoei.longitude == 4.8898397459714715) // 4.8898
+    assert(onderBoei.latitude == 52.35581836339878) // 52.3558
   }
 
 }

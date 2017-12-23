@@ -2,7 +2,7 @@ package v1.location
 
 import javax.inject.Inject
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Writes, Json}
 import play.api.mvc._
 import play.api.data.format.Formats._
 import play.api.i18n.I18nSupport
@@ -106,9 +106,14 @@ class LocationController @Inject()(
     }
 
     def success(input: OnderBoeiFormInput) = {
-      handler.getOnderboei(input).map { location => Created(Json.toJson(location)).withHeaders(LOCATION -> location.link) }
-    }
+      handler.getOnderboei(input).flatMap {
+        case location: Some[LocationResource] => Future(Ok(Json.toJson(location.get)))
+        case None => Future.successful(BadRequest("error"))
+      }
 
-    form.bindFromRequest().fold(failure, success)
+    }
+    //Fix: jSON writer for OnderBoeiLocation
+    onderboeiForm.bindFromRequest().fold(failure, success)
   }
+
 }
