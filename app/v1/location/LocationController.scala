@@ -112,7 +112,7 @@ class LocationController @Inject()(
       }
 
     }
-    //Fix: jSON writer for OnderBoeiLocation
+
     onderboeiForm.bindFromRequest().fold(failure, success)
   }
 
