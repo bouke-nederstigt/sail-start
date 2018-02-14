@@ -1,6 +1,7 @@
 package v1.location
 
 
+import play.api.Logger
 import v1.wind.Wind
 
 import scala.collection.mutable
@@ -56,7 +57,7 @@ trait LocationRepository {
 @Singleton
 class InMemoryLocationRepository @Inject() extends LocationRepository {
 
-  private val logger = org.slf4j.LoggerFactory.getLogger(this.getClass)
+  private val logger = Logger
 
   private val locations = mutable.HashMap.empty[LocationId, Location]
 
@@ -69,7 +70,7 @@ class InMemoryLocationRepository @Inject() extends LocationRepository {
 
   override def get(id: LocationId): Future[Option[Location]] = {
     Future.successful {
-      logger.trace(s"get: id = $id")
+      logger.debug(s"getting location: id = $id")
       locations.get(id)
     }
   }

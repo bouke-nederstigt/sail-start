@@ -2,6 +2,7 @@ package v1.location
 
 import javax.inject.Inject
 
+import play.api.Logger
 import play.api.libs.json.{JsValue, Writes, Json}
 import play.api.mvc._
 import play.api.data.format.Formats._
@@ -106,9 +107,10 @@ class LocationController @Inject()(
     }
 
     def success(input: OnderBoeiFormInput) = {
+      Logger.debug("Form validation passed. Start calculating onderboei")
       handler.getOnderboei(input).flatMap {
         case location: Some[LocationResource] => Future(Ok(Json.toJson(location.get)))
-        case None => Future.successful(BadRequest("error"))
+        case None => Future.successful(BadRequest("Unable to retrieve Onderboei location"))
       }
 
     }

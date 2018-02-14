@@ -2,6 +2,7 @@ package v1.wind
 
 import javax.inject.Inject
 
+import play.api.Configuration
 import play.api.libs.json.{Reads, JsResult, JsValue}
 import v1.location.{LocationId, Location}
 import play.api.libs.ws._
@@ -17,14 +18,14 @@ trait WindService {
   def getWindForLocation(location: Location): Future[Wind]
 }
 
-class OpenApiWindService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends WindService {
+class OpenApiWindService @Inject()(ws: WSClient, config: Configuration)(implicit ec: ExecutionContext) extends WindService {
 
   val url = "http://api.openweathermap.org/data/2.5/"
 
-  val apiKey = sys.env("OPENWIND_APIKEY")
+  val apiKey = config.getString("windservice.apikey")
 
   private def createRequest(action: String, args: Tuple2[String, String]*): WSRequest = {
-    ws.url(url + action).withQueryString("APPID" -> apiKey).withQueryString(args.toList: _*)
+      ws.url(url + action).withQueryString("APPID" -> apiKey.get).withQueryString(args.toList: _*)
   }
 
   override def getWindForLocation(location: Location): Future[Wind] = {

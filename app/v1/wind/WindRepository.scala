@@ -1,5 +1,9 @@
 package v1.wind
 
+import javax.inject.{Inject, Singleton}
+
+
+import play.Logger
 import v1.location.{LocationId, Location}
 import scala.collection.mutable
 
@@ -13,7 +17,8 @@ trait WindRepository {
   def findByLocation(locationId: LocationId): Option[Wind]
 }
 
-class InMemoryWindRepository extends WindRepository {
+@Singleton
+class InMemoryWindRepository @Inject() extends WindRepository {
   private val winds = mutable.HashMap.empty[LocationId, Wind]
 
   override def save(wind: Wind): LocationId = {
@@ -26,6 +31,7 @@ class InMemoryWindRepository extends WindRepository {
   }
 
   override def findByLocation(locationId: LocationId): Option[Wind] = {
+    Logger.debug(s"Retrieving wind for location. id = $locationId")
     winds.get(locationId)
   }
 }

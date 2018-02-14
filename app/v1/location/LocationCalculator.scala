@@ -1,5 +1,6 @@
 package v1.location
 
+import play.api.Logger
 import v1.wind.Wind
 
 /**
@@ -12,6 +13,7 @@ class LocationCalculator {
    * given initial bearing (bearing normally varies around path followed).
    */
   def calculateOnderBoei(startSchip: Location, startLineLength: Int, startLineBearing: Int): OnderBoei = {
+    Logger.debug("Calculating onderboei")
     val φ1 = math.toRadians(startSchip.latitude)
     val λ1 = math.toRadians(startSchip.longitude)
     val θ = math.toRadians(startLineBearing.toDouble)

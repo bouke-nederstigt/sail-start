@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule
 import net.codingwell.scalaguice.ScalaModule
 import play.api.{Configuration, Environment}
 import v1.location._
+import v1.wind.{WindService, OpenApiWindService, InMemoryWindRepository, WindRepository}
 
 /**
  * Sets up custom components for Play.
@@ -15,6 +16,8 @@ class Module(environment: Environment, configuration: Configuration)
   with ScalaModule {
 
   override def configure() = {
+    bind[WindRepository].to[InMemoryWindRepository].in[Singleton]
     bind[LocationRepository].to[InMemoryLocationRepository].in[Singleton]
+    bind[WindService].to[OpenApiWindService]
   }
 }
