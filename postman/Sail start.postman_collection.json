@@ -1,0 +1,117 @@
+{
+	"info": {
+		"name": "Sail start",
+		"_postman_id": "45ece16e-3a54-4324-b994-36b9bea18434",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get locations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{HOST}}/v1/locations/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"locations",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add bovenboei",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 1,\n\t\"latitude\": 52.3558184,\n\t\"longitude\": 4.886894,\n\t\"locationType\": \"bovenboei\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/locations/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"locations",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add startschip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 2,\n\t\"latitude\": 52.3558184,\n\t\"longitude\": 4.886894,\n\t\"locationType\": \"startschip\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/locations",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"locations"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get onderboei",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"startschipId\": 2,\n\t\"bovenboeiId\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/locations/onderboei",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"locations",
+						"onderboei"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
