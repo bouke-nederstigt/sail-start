@@ -46,8 +46,9 @@ class LocationAction @Inject()(messagesApi: MessagesApi)(
       request.method match {
         case GET | HEAD =>
           result.withHeaders("Cache-Control" -> s"max-age: 100")
+          result.withHeaders("Access-Control-Allow-Origin" -> s"*")
         case other =>
-          result
+          result.withHeaders("Access-Control-Allow-Origin" -> s"*")
       }
     }
   }
